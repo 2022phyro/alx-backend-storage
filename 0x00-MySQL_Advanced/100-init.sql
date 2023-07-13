@@ -13,13 +13,14 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS projects (
     id int not null AUTO_INCREMENT,
     name varchar(255) not null,
+    weight int default 1,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS corrections (
     user_id int not null,
     project_id int not null,
-    score int default 0,
+    score float default 0,
     KEY `user_id` (`user_id`),
     KEY `project_id` (`project_id`),
     CONSTRAINT fk_user_id FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
@@ -32,10 +33,10 @@ SET @user_bob = LAST_INSERT_ID();
 INSERT INTO users (name) VALUES ("Jeanne");
 SET @user_jeanne = LAST_INSERT_ID();
 
-INSERT INTO projects (name) VALUES ("C is fun");
+INSERT INTO projects (name, weight) VALUES ("C is fun", 1);
 SET @project_c = LAST_INSERT_ID();
 
-INSERT INTO projects (name) VALUES ("Python is cool");
+INSERT INTO projects (name, weight) VALUES ("Python is cool", 2);
 SET @project_py = LAST_INSERT_ID();
 
 
@@ -44,4 +45,3 @@ INSERT INTO corrections (user_id, project_id, score) VALUES (@user_bob, @project
 
 INSERT INTO corrections (user_id, project_id, score) VALUES (@user_jeanne, @project_c, 91);
 INSERT INTO corrections (user_id, project_id, score) VALUES (@user_jeanne, @project_py, 73);
-

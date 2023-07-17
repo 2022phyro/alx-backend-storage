@@ -1,0 +1,2 @@
+// Thi shows the databases in our mongo db
+show databases

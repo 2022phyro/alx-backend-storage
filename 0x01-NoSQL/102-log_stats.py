@@ -21,11 +21,6 @@ if __name__ == '__main__':
             }
         },
         {
-            '$match': {
-                'count': {'$gt': 1}
-            }
-        },
-        {
             '$sort': {
                 'count': DESCENDING}
         },
@@ -35,4 +30,4 @@ if __name__ == '__main__':
     result = list(logs.aggregate(pipeline))
     print("IPs:")
     for doc in result:
-        print(f"\t{doc['_id']}: {doc['count']}")
+        print(f"\t{doc.get('_id')}: {doc.get('count')}")

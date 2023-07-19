@@ -31,6 +31,23 @@ def call_history(method: Callable) -> Callable:
     return wrapper
 
 
+def replay(method: Callable) -> None:
+    """Replaying last commands"""
+    temp = redis.Redis()
+    name = method.__qualname__
+    i_key = f"{name}:inputs"
+    o_key = f"{name}:outputs"
+    inn = temp.lrange(i_key, 0, -1)
+    out = temp.lrange(o_key, 0, -1)
+    count = temp.get(name).decode('utf-8')
+
+    print(f"{name} was called {count} times:")
+    for i, j in zip(inn, out):
+        i = i.decode('utf-8')
+        j = j.decode('utf-8')
+        print(f"{name}(*{i}) -> {j}")
+
+
 class Cache:
     """This class is an implementation of a cache"""
 

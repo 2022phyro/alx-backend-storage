@@ -12,14 +12,13 @@ def track(func: Callable) -> Callable:
     def wrapper(url):
         cache = redis.Redis()
         """Wrapper utility function"""
-        key = f"count:{url}"
-        cache.incr(key)
         res = cache.get(url)
         if res:
-            return res
+            return res.decode('utf-8')
         res = func(url)
-        cache.set(url, res)
-        cach.expire(url, 10)
+        key = f"count:{url}"
+        cache.incr(key)
+        cache.setex(url, 10, res)
         return res
     return wrapper
 
@@ -27,5 +26,5 @@ def track(func: Callable) -> Callable:
 @track
 def get_page(url: str) -> str:
     """Carries out a Http request"""
-    val = requests.get(url)
+    val = requests.get(url).text
     return val

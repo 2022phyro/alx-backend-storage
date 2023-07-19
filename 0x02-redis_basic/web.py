@@ -5,6 +5,8 @@ import redis
 from functools import wraps
 import requests
 
+cache = redis.Redis()
+
 
 def track(func: Callable) -> Callable:
     """Caches our requests to a url"""
@@ -14,11 +16,11 @@ def track(func: Callable) -> Callable:
         cache = redis.Redis()
         key = f"count:{url}"
         cache.incr(key)
-        res = cache.get(url)
+        res = cache.get(f"cached:{url}")
         if res:
             return res.decode('utf-8')
         res = func(url)
-        cache.setex(url, 10, res)
+        cache.setex(f"cached:{url}", 10, res)
         return res
     return wrapper
 

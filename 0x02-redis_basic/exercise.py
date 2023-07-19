@@ -17,15 +17,30 @@ def count_calls(method: Callable) -> Callable:
     return wrapper
 
 
+def call_history(method: Callable) -> Callable:
+    """Recording call history"""
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        """Wrapper utility function"""
+        i_key = f"{method.__qualname__}:inputs"
+        o_key = f"{method.__qualname__}:outputs"
+        self._redis.rpush(i_key, str(args))
+        out = method(self, *args, **kwargs)
+        self._redis.rpush(o_key, out)
+        return out
+    return wrapper
+
+
 class Cache:
     """This class is an implementation of a cache"""
 
     def __init__(self):
-        """Inityializes the class"""
+        """Initializes the class"""
         self._redis = redis.Redis()
         self._redis.flushdb()
 
     @count_calls
+    @call_history
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """Stores a random set of data"""
         key = str(uuid4())

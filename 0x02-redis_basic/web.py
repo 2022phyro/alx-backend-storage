@@ -5,6 +5,7 @@ import redis
 from functools import wraps
 import requests
 
+
 cache = redis.Redis()
 
 
@@ -19,6 +20,7 @@ def track(func: Callable) -> Callable:
         if res:
             return res.decode('utf-8')
         res = func(url)
+        cache.set(key, 0)
         cache.setex(f"cached:{url}", 10, res)
         return res
     return wrapper

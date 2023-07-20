@@ -13,7 +13,6 @@ def track(func: Callable) -> Callable:
     @wraps(func)
     def wrapper(url):
         """Wrapper utility function"""
-        cache = redis.Redis()
         key = f"count:{url}"
         cache.incr(key)
         res = cache.get(f"cached:{url}")

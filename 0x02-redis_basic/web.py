@@ -14,13 +14,11 @@ def track(func: Callable) -> Callable:
     @wraps(func)
     def wrapper(url):
         """Wrapper utility function"""
-        key = f"count:{url}"
-        cache.incr(key)
+        cache.incr(f"count:{url}")
         res = cache.get(f"cached:{url}")
         if res:
             return res.decode('utf-8')
         res = func(url)
-        cache.set(key, 0)
         cache.setex(f"cached:{url}", 10, res)
         return res
     return wrapper
